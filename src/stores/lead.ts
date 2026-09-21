@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { leadService } from '@/services/lead.service'
-import type { Lead, LeadContactPayload, QualificationAnswers } from '@/types'
+import type { Lead, LeadContactPayload, LeadMeta, QualificationAnswers } from '@/types'
 
 const STORAGE_KEY = 'construmia_lead'
 
@@ -39,9 +39,9 @@ export const useLeadStore = defineStore('lead', {
       this.set(await leadService.create(payload))
     },
 
-    async qualify(answers: QualificationAnswers) {
+    async qualify(answers: QualificationAnswers, meta?: LeadMeta) {
       if (!this.lead) throw { status: 400, message: 'Primero completa tu registro' }
-      this.set(await leadService.qualify(this.lead.id, answers))
+      this.set(await leadService.qualify(this.lead.id, answers, meta))
     },
 
     /** Vuelve a leer el lead del API (por ejemplo tras confirmar un pago). */
