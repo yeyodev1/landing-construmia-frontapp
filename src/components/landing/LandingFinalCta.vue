@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import FormCta from '@/components/landing/FormCta.vue'
+import LeadForm from '@/components/lead/LeadForm.vue'
 import { useReveal } from '@/composables/useReveal'
 import { cld, cldSet } from '@/config/media'
 import { finalCta } from '@/config/copy/landing'
 
 const root = ref<HTMLElement | null>(null)
 useReveal(root)
+
+// Para quien prefiere no usar modales: el único formulario completo de la página.
+// `#registro` vive acá porque es el ancla del router y de los avisos de actividad.
 </script>
 
 <template>
@@ -21,12 +24,17 @@ useReveal(root)
       decoding="async"
     />
 
-    <div class="final__inner reveal">
-      <p class="final__eyebrow">{{ finalCta.eyebrow }}</p>
-      <h2 id="final-title" class="final__title">{{ finalCta.title }}</h2>
-      <p class="final__lead">{{ finalCta.lead }}</p>
-      <FormCta :label="finalCta.cta" variant="light" />
-      <p class="final__note">{{ finalCta.note }}</p>
+    <div class="final__inner">
+      <div class="final__copy reveal">
+        <p class="final__eyebrow">{{ finalCta.eyebrow }}</p>
+        <h2 id="final-title" class="final__title">{{ finalCta.title }}</h2>
+        <p class="final__lead">{{ finalCta.lead }}</p>
+        <p class="final__note">{{ finalCta.note }}</p>
+      </div>
+
+      <div id="registro" class="final__form" tabindex="-1">
+        <LeadForm />
+      </div>
     </div>
   </section>
 </template>
@@ -38,7 +46,7 @@ useReveal(root)
   overflow: hidden;
   background: $night;
   color: $on-night;
-  padding-block: clamp(6rem, 14vw, 11rem);
+  padding-block: clamp(4.5rem, 11vw, 8.5rem);
 
   &::after {
     content: '';
@@ -61,9 +69,33 @@ useReveal(root)
   }
 
   &__inner {
-    @include container(52rem);
-    @include flex(column, center, flex-start, 1.3rem);
-    text-align: center;
+    @include container(1180px);
+    @include flex(column, stretch, flex-start, 2.5rem);
+
+    @include from('lg') {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: clamp(2.5rem, 6vw, 6rem);
+    }
+  }
+
+  &__copy {
+    @include flex(column, flex-start, flex-start, 1.2rem);
+
+    @include from('lg') {
+      flex: 1 1 0;
+      max-width: 36rem;
+    }
+  }
+
+  &__form {
+    scroll-margin-top: 5.5rem;
+    outline: none;
+
+    @include from('lg') {
+      flex: 0 0 min(30rem, 46%);
+    }
   }
 
   &__eyebrow {
@@ -80,7 +112,6 @@ useReveal(root)
     font-size: $text-lg;
     color: rgba($on-night, 0.82);
     max-width: 40rem;
-    margin-bottom: 0.8rem;
   }
 
   &__note {
