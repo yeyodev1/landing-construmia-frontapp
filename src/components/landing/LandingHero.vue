@@ -1,51 +1,32 @@
 <script setup lang="ts">
-import LeadForm from '@/components/lead/LeadForm.vue'
-import { cld, cldSet } from '@/config/media'
+import HeroVideo from '@/components/landing/HeroVideo.vue'
 import { hero } from '@/config/copy/landing'
 
-// El formulario es el protagonista: en desktop comparte la primera pantalla con el titular;
-// en móvil va justo debajo del titular, y la bajada y las pruebas quedan después.
-// `#registro` vive acá (no en LeadForm) porque es el ancla de todos los CTA y del router.
+// El video es el protagonista: en desktop comparte la primera pantalla con el titular;
+// en móvil va a sangre justo debajo del titular, y la prueba de confianza queda debajo del video.
 </script>
 
 <template>
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="hero__media">
-      <img
-        :src="cld(hero.image.id, 1600)"
-        :srcset="cldSet(hero.image.id, [640, 960, 1280, 1600, 2000])"
-        sizes="100vw"
-        :alt="hero.image.alt"
-        width="1600"
-        height="1600"
-        fetchpriority="high"
-        decoding="async"
-      />
-    </div>
-
+  <section id="inicio" class="hero" aria-labelledby="hero-title">
     <div class="hero__inner">
       <div class="hero__copy">
-        <div class="hero__intro">
-          <p class="hero__eyebrow">{{ hero.eyebrow }}</p>
-          <h1 id="hero-title" class="hero__title">
-            {{ hero.title[0] }}
-            <em>{{ hero.title[1] }}</em>
-          </h1>
-        </div>
-
-        <div class="hero__details">
-          <p class="hero__lead">{{ hero.lead }}</p>
-          <dl class="hero__trust">
-            <div v-for="item in hero.trust" :key="item.label" class="hero__fact">
-              <dt>{{ item.label }}</dt>
-              <dd>{{ item.value }}</dd>
-            </div>
-          </dl>
-        </div>
+        <p class="hero__eyebrow">{{ hero.eyebrow }}</p>
+        <h1 id="hero-title" class="hero__title">
+          {{ hero.title[0] }}
+          <em>{{ hero.title[1] }}</em>
+        </h1>
+        <p class="hero__lead">{{ hero.lead }}</p>
       </div>
 
-      <div id="registro" class="hero__form" tabindex="-1">
-        <LeadForm />
+      <div class="hero__stage">
+        <HeroVideo class="hero__video" />
+
+        <dl class="hero__trust">
+          <div v-for="item in hero.trust" :key="item.label" class="hero__fact">
+            <dt>{{ item.label }}</dt>
+            <dd>{{ item.value }}</dd>
+          </div>
+        </dl>
       </div>
     </div>
   </section>
@@ -59,82 +40,41 @@ import { hero } from '@/config/copy/landing'
   color: $on-night;
   overflow: hidden;
 
-  // Móvil: la foto es una banda arriba que se funde en la noche detrás del titular.
-  &__media {
+  // La luz del proyector: un halo cobre muy tenue detrás de la pantalla, nada más.
+  &::before {
+    content: '';
     position: absolute;
-    inset: 0 0 auto;
-    height: 30rem;
     z-index: -1;
-
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        180deg,
-        rgba($night, 0.35) 0%,
-        rgba($night, 0.55) 45%,
-        $night 100%
-      );
-    }
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: 50% 40%;
-    }
-
-    @include from('lg') {
-      inset: 0;
-      height: auto;
-
-      img {
-        object-position: 50% 70%;
-      }
-
-      &::after {
-        background:
-          linear-gradient(90deg, rgba($night, 0.94) 0%, rgba($night, 0.78) 42%, rgba($night, 0.3) 100%),
-          linear-gradient(0deg, rgba($night, 0.85) 0%, transparent 40%);
-      }
-    }
+    right: -10%;
+    top: 10%;
+    width: min(1100px, 150vw);
+    height: 80%;
+    background: radial-gradient(closest-side, rgba($accent, 0.2), transparent);
+    pointer-events: none;
   }
 
   &__inner {
     @include container(1280px);
-    @include flex(column, stretch, flex-start, 0);
-    padding-block: 3.2rem 3.5rem;
+    @include flex(column, stretch, flex-start, 1.6rem);
+    padding-block: 2rem 3rem;
 
     @include from('lg') {
       flex-direction: row;
       align-items: center;
-      justify-content: space-between;
-      gap: clamp(2.5rem, 5vw, 5rem);
-      padding-block: 4.5rem 5rem;
+      gap: clamp(2.5rem, 4vw, 4rem);
+      padding-block: 3.5rem 4.5rem;
       min-height: calc(100svh - 72px);
     }
   }
 
-  // En móvil los hijos de la columna se ordenan alrededor del formulario.
   &__copy {
-    display: contents;
+    @include flex(column, flex-start, flex-start, 0.9rem);
+    animation: hero-rise 0.7s $ease both;
 
     @include from('lg') {
-      @include flex(column, flex-start, flex-start, 2.2rem);
-      flex: 1 1 0;
+      flex: 0 0 34%;
       min-width: 0;
-      max-width: 40rem;
-    }
-  }
-
-  &__intro {
-    order: 1;
-    @include flex(column, flex-start, flex-start, 1.1rem);
-    margin-bottom: 2rem;
-
-    @include from('lg') {
-      margin-bottom: 0;
+      gap: 1.3rem;
     }
   }
 
@@ -148,8 +88,8 @@ import { hero } from '@/config/copy/landing'
   }
 
   &__title {
-    @include display(clamp(2.35rem, 1.5rem + 4.2vw, 4.6rem), 400);
-    line-height: 1.02;
+    @include display(clamp(2.1rem, 1.5rem + 2.6vw, 3.6rem), 400);
+    line-height: 1.04;
     letter-spacing: -0.03em;
 
     em {
@@ -159,60 +99,68 @@ import { hero } from '@/config/copy/landing'
     }
   }
 
-  &__form {
-    order: 2;
-    scroll-margin-top: 5rem;
-    outline: none;
-
-    @include from('lg') {
-      flex: 0 0 min(30rem, 44%);
-    }
-  }
-
-  &__details {
-    order: 3;
-    @include flex(column, stretch, flex-start, 2rem);
-    margin-top: 2.5rem;
-
-    @include from('lg') {
-      margin-top: 0;
-    }
-  }
-
   &__lead {
-    font-size: $text-lg;
+    font-size: $text-base;
     line-height: 1.6;
     color: $on-night-soft;
     max-width: 34rem;
+
+    @include from('lg') {
+      font-size: $text-lg;
+    }
+  }
+
+  &__stage {
+    @include flex(column, stretch, flex-start, 0);
+    min-width: 0;
+    animation: hero-rise 0.8s $ease 0.1s both;
+
+    @include from('lg') {
+      flex: 1 1 0;
+    }
+  }
+
+  // En móvil la pantalla va a sangre: el video se ve más grande sin salirse del flujo.
+  &__video {
+    margin-inline: -1.25rem;
+
+    @include from('md') {
+      margin-inline: 0;
+    }
   }
 
   &__trust {
     @include flex(column, stretch, flex-start, 0);
+    margin-top: 1.25rem;
     border-top: 1px solid $night-line;
 
     @include from('sm') {
       flex-direction: row;
     }
+
+    @include from('md') {
+      margin-top: 1.75rem;
+    }
   }
 
   &__fact {
     @include flex(column-reverse, flex-start, flex-end, 0.25rem);
-    padding: 1rem 0;
+    padding: 0.9rem 0;
     border-bottom: 1px solid $night-line;
 
     @include from('sm') {
       flex: 1 1 0;
       border-bottom: 0;
-      padding: 1.2rem 1.2rem 0 0;
+      padding: 1.1rem 1.1rem 0 0;
 
       & + & {
-        padding-left: 1.2rem;
+        padding-left: 1.1rem;
         border-left: 1px solid $night-line;
       }
     }
 
     dd {
-      @include display($text-xl, 500);
+      @include display($text-lg, 500);
       color: $on-night;
     }
 
@@ -222,6 +170,17 @@ import { hero } from '@/config/copy/landing'
       color: $on-night-soft;
       line-height: 1.45;
     }
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 </style>
