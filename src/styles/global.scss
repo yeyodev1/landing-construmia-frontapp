@@ -163,10 +163,110 @@ label {
     color: $surface;
   }
 
+  // Sobre secciones oscuras
+  &--light {
+    background: $on-night;
+    color: $ink;
+
+    &:hover {
+      background: $surface;
+      transform: translateY(-1px);
+    }
+  }
+
+  &--outline-light {
+    border: 1px solid $night-line;
+    color: $on-night;
+
+    &:hover {
+      border-color: $accent-glow;
+      color: $accent-glow;
+    }
+  }
+
+  &--lg {
+    font-size: 0.95rem;
+    padding: 1.1rem 2.2rem;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
   &:disabled {
     opacity: 0.45;
     pointer-events: none;
   }
+}
+
+// Campo de formulario: label + control + error. Lo usan todos los formularios del embudo.
+.field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  &__error {
+    font-size: 0.76rem;
+    color: $danger;
+    margin-top: 0.3rem;
+  }
+
+  &--invalid input,
+  &--invalid select {
+    border-color: $danger;
+  }
+}
+
+// Encabezado de sección: eyebrow + título + bajada.
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 46rem;
+
+  &--center {
+    align-items: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  &__eyebrow {
+    @include eyebrow;
+  }
+
+  &__title {
+    @include display($display-sm);
+  }
+
+  &__lead {
+    font-size: $text-lg;
+    color: $ink-soft;
+  }
+}
+
+// Aparición al hacer scroll (la activa el composable useReveal).
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s $ease,
+    transform 0.7s $ease;
+
+  &.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// La Cajita de Pagos es de Payphone: solo se ajusta lo mínimo para que respire en móvil.
+#pp-button,
+.payphone-box {
+  width: 100%;
+  font-family: $font-principal;
 }
 
 .visually-hidden {
