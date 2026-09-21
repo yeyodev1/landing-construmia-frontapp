@@ -2,12 +2,24 @@
 import { ref } from 'vue'
 import { embeds } from '@/config/site'
 import { videoCopy } from '@/config/copy/video'
-import { useWistia } from '@/composables/useWistia'
+import { useWistia, type WistiaPlayerElement } from '@/composables/useWistia'
+
+const props = defineProps<{
+  /** Segundo desde el que arranca (seguir donde se quedó en la home). */
+  startAt?: number
+}>()
+
+const emit = defineEmits<{ timeupdate: [seconds: number]; play: []; pause: [] }>()
 
 const copy = videoCopy.player
-const { status, retry, swatchUrl } = useWistia(embeds.wistiaMediaId)
+const mediaEl = ref<WistiaPlayerElement | null>(null)
 
-const mediaEl = ref<(HTMLElement & { pause?: () => unknown }) | null>(null)
+const { status, retry, swatchUrl, currentTime } = useWistia(embeds.wistiaMediaId, mediaEl, {
+  startAt: () => props.startAt,
+  onTime: (seconds) => emit('timeupdate', seconds),
+  onPlay: () => emit('play'),
+  onPause: () => emit('pause'),
+})
 
 /** Al abrir el cuestionario el video se pausa: nadie responde bien con alguien hablando de fondo. */
 function pause() {
@@ -18,7 +30,17 @@ function pause() {
   }
 }
 
-defineExpose({ pause })
+/** Devuelve false si el navegador bloqueó la reproducción: queda el botón propio de Wistia. */
+async function play(): Promise<boolean> {
+  try {
+    await mediaEl.value?.play?.()
+    return true
+  } catch {
+    return false
+  }
+}
+
+defineExpose({ pause, play, currentTime, status })
 </script>
 
 <template>
@@ -41,6 +63,7 @@ defineExpose({ pause })
       class="player__media"
       :media-id="embeds.wistiaMediaId"
       aspect="1.7777777777777777"
+      :current-time="startAt && startAt > 0 ? startAt : undefined"
     ></wistia-player>
 
     <Transition name="fade">
