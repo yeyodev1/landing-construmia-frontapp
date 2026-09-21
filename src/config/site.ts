@@ -9,7 +9,7 @@ export const site = {
   tagline: 'Construcción y remodelación',
   description:
     'Diseño y construcción bajo un mismo equipo. Remodelaciones integrales, ampliaciones y casas antiguas desde $30.000.',
-  url: 'https://construmia.com',
+  url: 'https://mkt.construmia.com',
   email: 'team@construmia.com',
   phoneDisplay: '+593 99 369 7927',
   // Solo dígitos con código de país
