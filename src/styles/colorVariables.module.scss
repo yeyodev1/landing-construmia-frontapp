@@ -1,27 +1,36 @@
-// Paleta de construmia. Semántica primero: los componentes hablan de tinta,
-// papel y acento, no de "rosa" o "gris 700".
+// Paleta de Construmia, sacada del logo: cobre del isotipo y grafito del wordmark.
+// Semántica primero: los componentes hablan de tinta, papel y acento.
 @use 'sass:color';
 
-// Acento de marca
-$accent: #e6285c;
-$accent-deep: color.adjust($accent, $lightness: -12%);
+// Acento de marca (cobre)
+$accent: #aa6936;
+$accent-deep: color.adjust($accent, $lightness: -10%);
 $accent-soft: color.mix($accent, #ffffff, 14%);
+$accent-glow: #d9a06b; // cobre claro para usar sobre fondos oscuros
 
 // Superficies
-$paper: #fdfcfa; // fondo base
+$paper: #faf8f4; // fondo base, blanco cálido
 $surface: #ffffff; // superficies elevadas
-$sand: #f1ece6; // bloques suaves
-$line: #e7e1d9; // bordes
+$sand: #f1ece4; // bloques suaves
+$line: #e5ded3; // bordes
+
+// Secciones oscuras (grafito cálido, no negro puro)
+$night: #161412;
+$night-soft: #221f1c;
+$night-line: rgba(#ffffff, 0.1);
+$on-night: #f4efe8;
+$on-night-soft: rgba(#f4efe8, 0.68);
 
 // Texto
-$ink: #191423; // texto principal
-$ink-soft: #4a4552; // texto secundario
-$ink-muted: #8a8590; // terciario / labels
+$ink: #1d1b19; // texto principal
+$ink-soft: #4f4a45; // texto secundario
+$ink-muted: #8c8074; // terciario / labels
+$graphite: #737373; // gris del wordmark
 
-$overlay: rgba(#100c14, 0.55);
+$overlay: rgba(#0e0c0a, 0.62);
 
 // Estados
-$success: #3bb77e;
+$success: #3f9b6d;
 $warning: #d9a441;
 $info: #6a8caf;
 $danger: #c2554f;
@@ -41,4 +50,4 @@ $text-secondary: $ink-soft;
 // Sombras — suaves, nada de "card de dashboard"
 $shadow-sm: 0 1px 2px rgba($ink, 0.04), 0 4px 12px rgba($ink, 0.04);
 $shadow-md: 0 2px 6px rgba($ink, 0.05), 0 18px 40px rgba($ink, 0.08);
-$shadow-lg: 0 30px 70px rgba($ink, 0.14);
+$shadow-lg: 0 30px 70px rgba($ink, 0.16);
