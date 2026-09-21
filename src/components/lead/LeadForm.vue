@@ -4,9 +4,17 @@ import LeadTextField from '@/components/lead/LeadTextField.vue'
 import PhoneField from '@/components/lead/PhoneField.vue'
 import CommitmentCheck from '@/components/lead/CommitmentCheck.vue'
 import LeadResume from '@/components/lead/LeadResume.vue'
+import LeadSelectField from '@/components/lead/LeadSelectField.vue'
 import { useLeadForm } from '@/composables/useLeadForm'
 import { startTimeframes } from '@/config/qualification'
-import { form as copy } from '@/config/copy/landing'
+import { form as copy, projectTypeQuestion } from '@/config/copy/landing'
+
+const props = defineProps<{
+  /** Elegido en el paso 1 del modal: se envía y no se vuelve a preguntar. */
+  projectType?: string
+  /** Dentro del modal: sin tarjeta ni encabezado propios, los pone el diálogo. */
+  bare?: boolean
+}>()
 
 const {
   values,
@@ -16,25 +24,38 @@ const {
   editing,
   showResume,
   resumeName,
+  asksProjectType,
   blur,
   input,
   countryChanged,
   fieldId,
   submit,
   resume,
-} = useLeadForm(useId())
+} = useLeadForm(useId(), { projectType: () => props.projectType })
 </script>
 
 <template>
-  <div class="lead-form">
+  <div class="lead-form" :class="{ 'lead-form--bare': bare }">
     <LeadResume v-if="showResume" :name="resumeName" @resume="resume" @other="editing = true" />
 
     <form v-else class="lead-form__form" novalidate @submit.prevent="submit">
-      <header class="lead-form__head">
+      <header v-if="!bare" class="lead-form__head">
         <p class="lead-form__step">{{ copy.step }}</p>
         <h2 class="lead-form__title">{{ copy.title }}</h2>
         <p class="lead-form__lead">{{ copy.lead }}</p>
       </header>
+
+      <LeadSelectField
+        v-if="asksProjectType"
+        :id="fieldId('projectType')"
+        v-model="values.projectType"
+        name="project-type"
+        :label="copy.fields.projectType.label"
+        :placeholder="copy.fields.projectType.placeholder"
+        :options="projectTypeQuestion.options"
+        :error="errors.projectType"
+        @blur="blur('projectType')"
+      />
 
       <div class="lead-form__row">
         <LeadTextField
@@ -95,31 +116,16 @@ const {
         @country-change="countryChanged"
       />
 
-      <div class="field" :class="{ 'field--invalid': errors.startTimeframe }">
-        <label :for="fieldId('startTimeframe')">{{ copy.fields.startTimeframe.label }}</label>
-        <div class="lead-form__select">
-          <select
-            :id="fieldId('startTimeframe')"
-            v-model="values.startTimeframe"
-            name="start-timeframe"
-            required
-            :class="{ 'is-empty': !values.startTimeframe }"
-            :aria-invalid="!!errors.startTimeframe"
-            :aria-describedby="`${fieldId('startTimeframe')}-error`"
-            @blur="blur('startTimeframe')"
-            @change="blur('startTimeframe')"
-          >
-            <option value="" disabled>{{ copy.fields.startTimeframe.placeholder }}</option>
-            <option v-for="option in startTimeframes" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-        </div>
-        <p :id="`${fieldId('startTimeframe')}-error`" class="field__error" aria-live="polite">
-          {{ errors.startTimeframe }}
-        </p>
-      </div>
+      <LeadSelectField
+        :id="fieldId('startTimeframe')"
+        v-model="values.startTimeframe"
+        name="start-timeframe"
+        :label="copy.fields.startTimeframe.label"
+        :placeholder="copy.fields.startTimeframe.placeholder"
+        :options="startTimeframes"
+        :error="errors.startTimeframe"
+        @blur="blur('startTimeframe')"
+      />
 
       <CommitmentCheck
         :id="fieldId('commitment')"
@@ -167,6 +173,17 @@ const {
     padding: 2rem 1.9rem;
   }
 
+  &--bare {
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+
+    @include from('sm') {
+      padding: 0;
+    }
+  }
+
   &__form {
     @include flex(column, stretch, flex-start, 0.95rem);
   }
@@ -196,32 +213,6 @@ const {
 
     > .field {
       flex: 1 1 7.5rem;
-    }
-  }
-
-  &__select {
-    position: relative;
-
-    // 16 px en el control: por debajo de eso iOS hace zoom al enfocar.
-    select {
-      font-size: 1rem;
-      appearance: none;
-      padding-right: 2.4rem;
-      cursor: pointer;
-
-      &.is-empty {
-        color: $ink-muted;
-      }
-    }
-
-    i {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.65rem;
-      color: $ink-muted;
-      pointer-events: none;
     }
   }
 
