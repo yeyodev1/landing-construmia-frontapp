@@ -3,7 +3,12 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue({
+      // <wistia-player> es un web component de Wistia, no un componente de Vue.
+      template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('wistia-') } },
+    }),
+  ],
   server: {
     port: 5173,
     // Hosts desde los que se sirve el dev server a través de túneles (cloudflared).
