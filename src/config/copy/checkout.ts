@@ -169,14 +169,34 @@ export const scheduleCopy = {
   },
   qualified: {
     eyebrow: 'Tu proyecto califica',
-    title: 'Tu proyecto es para nuestro método. Elige tu horario.',
-    lead: 'Por lo que nos contaste, podemos ayudarte. El primer paso es la visita técnica: reserva el día y la hora.',
+    title: 'Tu proyecto es para nuestro método. Elige cómo seguimos.',
+    lead: 'El primer paso es la visita técnica. Puedes agendarla tú mismo ahora con el pase premium, o esperar a que un asesor te contacte.',
   },
-  priceReminder: {
-    amount: visit,
-    title: `La visita técnica tiene un costo de ${visit}`,
-    text: `Incluye asesoría, levantamiento y diagnóstico, y se descuenta del diseño 3D si decides avanzar: en lugar de ${design} pagas ${balance}.`,
-    action: 'Dejarla pagada ahora',
+  /** Dos caminos para quien calificó y aún no paga. El calendario se abre solo con el pase premium. */
+  choice: {
+    premium: {
+      badge: 'Pase premium',
+      price: visit,
+      priceNote: 'Visita técnica',
+      title: 'Agenda tu cita ahora y sáltate todos los pasos',
+      points: [
+        'Eliges el día y la hora de tu visita hoy mismo',
+        'Sin esperar la llamada del asesor ni la revisión de tu caso',
+        `Los ${visit} se descuentan de tu diseño 3D: en lugar de ${design} pagas ${balance}`,
+        'Incluye asesoría, levantamiento y diagnóstico de tu proyecto',
+      ],
+      cta: `Pagar ${visit} y agendar ahora`,
+      note: 'Pago con tarjeta o transferencia. Al confirmarse, se abre tu agenda.',
+    },
+    advisor: {
+      badge: 'Sin pagar ahora',
+      title: 'Un asesor se contactará contigo en breve',
+      text: 'Revisamos lo que nos contaste de tu proyecto y te escribimos para coordinar la visita técnica.',
+      channel: (phone: string) => `Te escribiremos por WhatsApp al ${phone}.`,
+      whatsapp: '¿Prefieres escribirnos tú?',
+      whatsappAction: 'Escribir por WhatsApp',
+      whatsappMessage: 'Hola, mi proyecto calificó y quiero coordinar mi visita técnica',
+    },
   },
   calendarTitle: 'Agenda de visitas técnicas',
   calendarLoading: 'Cargando la agenda',
