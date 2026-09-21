@@ -3,16 +3,22 @@
  * acá no se inventan cifras, testimonios ni clientes. Las cifras se arman desde `facts`
  * para que un cambio de precio se haga en un solo lugar.
  */
-import { facts } from '@/config/site'
+import { embeds, facts } from '@/config/site'
 import { media } from '@/config/media'
+import { qualificationQuestions } from '@/config/qualification'
 
 const visit = `$${facts.visitPrice}`
 const design = `$${facts.designPrice}`
 const balance = `$${facts.designBalance}`
 const clients = facts.corporateClients.join(' y ')
 
-/** Ancla del formulario: todos los CTA de la página llevan acá. */
+/** Ancla del formulario inline (CTA final). Los CTA abren el modal; el router y los avisos bajan acá. */
 export const FORM_ANCHOR = '#registro'
+
+/** Primera pregunta del registro: la misma de la cualificación, así no se pregunta dos veces. */
+export const projectTypeQuestion = qualificationQuestions[0]!
+
+const preview = embeds.previewSeconds
 
 export const hero = {
   eyebrow: 'Remodelación integral · Diseño y construcción',
@@ -24,9 +30,25 @@ export const hero = {
     { value: '1 año', label: 'De garantía al cierre de cada obra' },
     { value: 'Un solo equipo', label: 'Responsable de principio a fin' },
   ],
-  image: {
-    id: media.renders.exteriores[0]!,
-    alt: 'Render 3D de un patio con piscina y área social iluminada al anochecer, diseñado por Construmia',
+  video: {
+    tag: 'Mira cómo trabajamos',
+    method: facts.method,
+    // Duración real del VSL en Wistia (329,8 s).
+    duration: '5:30',
+    durationLabel: 'Duración del video: 5 minutos 30 segundos',
+    sound: 'Sube el volumen',
+    play: `Reproducir el video: ${facts.method}`,
+    // Cuadro del propio video en Wistia: la diseñadora a cámara, no una foto de stock.
+    poster: 'https://embed-ssl.wistia.com/deliveries/96e4d525242fd390e5a84009f6b9c9763af91ea4.jpg',
+    posterAlt: 'La diseñadora de Construmia presenta el método a cámara',
+    registered: 'Seguir viendo',
+    registeredHint: 'Tu registro ya está listo. Sigue el video completo.',
+    gate: {
+      eyebrow: `Viste el adelanto de ${preview} segundos`,
+      title: 'Continúa el video',
+      text: 'Cuéntanos de tu proyecto y sigue viendo justo donde te quedaste.',
+      cta: 'Continúa el video',
+    },
   },
 }
 
@@ -39,6 +61,7 @@ export const form = {
     lastName: { label: 'Apellido', placeholder: 'Tu apellido' },
     email: { label: 'Correo', placeholder: 'tucorreo@ejemplo.com' },
     phone: { label: 'Teléfono (WhatsApp)', placeholder: '99 123 4567' },
+    projectType: { label: projectTypeQuestion.title, placeholder: 'Elige una opción' },
     startTimeframe: {
       label: '¿Cuándo quieres arrancar tu proyecto?',
       placeholder: 'Elige una opción',
@@ -65,6 +88,7 @@ export const form = {
       min === max
         ? `En ${country} el número tiene ${min} dígitos, sin el 0 inicial`
         : `En ${country} el número tiene entre ${min} y ${max} dígitos, sin el 0 inicial`,
+    projectType: 'Elige qué quieres transformar',
     startTimeframe: 'Elige cuándo quieres arrancar',
     commitment: 'Para continuar necesitamos tu compromiso con el proceso',
     summary: 'Revisa los campos marcados para continuar',
@@ -76,6 +100,26 @@ export const form = {
     lead: 'Tus datos están guardados. Continúa con el método y agenda tu visita técnica.',
     cta: 'Continuar donde me quedé',
     other: 'Registrar otros datos',
+  },
+}
+
+export const leadModal = {
+  dialogLabel: 'Cuéntanos de tu proyecto',
+  close: 'Cerrar',
+  back: 'Volver a elegir el tipo de proyecto',
+  progress: (current: number, total: number) => `Paso ${current} de ${total}`,
+  /** Encabezado según desde dónde se abrió: el video pausado o un CTA de la página. */
+  intro: {
+    video: 'Para seguir viendo, cuéntanos de tu proyecto',
+    cta: `Antes del video, cuéntanos de tu proyecto`,
+  },
+  typeTitle: projectTypeQuestion.title,
+  typeHelp: projectTypeQuestion.help,
+  details: {
+    title: 'Tus datos',
+    lead: 'Con esto te mostramos el video completo y te contactamos sobre tu proyecto.',
+    chosen: 'Tu proyecto',
+    change: 'Cambiar',
   },
 }
 
@@ -323,6 +367,7 @@ export const finalCta = {
   title: 'Construir a ciegas o construir con dirección.',
   lead: 'No estás contratando a alguien para que te remodele. Estás contratando a un equipo que sabe llevar tu proyecto desde una idea hasta una obra terminada.',
   cta: 'Quiero ver el método',
+  formNote: '¿Prefieres dejar tus datos aquí mismo? Completa el formulario.',
   note: `Registro sin costo · Visita técnica ${visit}`,
   image: {
     id: media.renders.exteriores[6]!,
