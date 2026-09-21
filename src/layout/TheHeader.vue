@@ -3,12 +3,15 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { site } from '@/config/site'
 import { headerCopy, stepByRoute } from '@/config/copy/shell'
+import { useLeadModal } from '@/composables/useLeadModal'
 
 /**
  * Header de embudo, no de sitio web: sin menú, porque cada enlace es una salida.
- * En la landing ofrece el único camino (bajar al registro); en el resto dice en qué paso va la persona.
+ * En la landing ofrece el único camino (el registro en modal); en el resto dice en qué paso va la persona.
  */
 const route = useRoute()
+const { open } = useLeadModal()
+const isHome = computed(() => route.name === 'Home')
 const scrolled = ref(false)
 
 const progress = computed(() => stepByRoute[String(route.name)] ?? null)
@@ -24,18 +27,6 @@ const steps = computed(() =>
 
 function onScroll() {
   scrolled.value = window.scrollY > 8
-}
-
-// En la landing el router no re-navega a un hash en el que ya está: se baja a mano.
-function goToForm(event: MouseEvent) {
-  if (route.name !== 'Home') return
-  const target = document.querySelector<HTMLElement>(headerCopy.ctaTarget)
-  if (!target) return
-  event.preventDefault()
-  const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
-  // Igual que FormCta: el foco va al formulario para teclado y lectores de pantalla.
-  target.focus({ preventScroll: true })
 }
 
 onMounted(() => {
@@ -69,11 +60,19 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
         </li>
       </ol>
 
+      <button
+        v-else-if="isHome"
+        type="button"
+        class="btn btn--dark header__cta"
+        aria-haspopup="dialog"
+        @click="open('cta')"
+      >
+        {{ headerCopy.cta }}
+      </button>
       <RouterLink
         v-else
         :to="{ name: 'Home', hash: headerCopy.ctaTarget }"
         class="btn btn--dark header__cta"
-        @click="goToForm"
       >
         {{ headerCopy.cta }}
       </RouterLink>
