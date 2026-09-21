@@ -10,7 +10,7 @@ cp .env.example .env        # VITE_API_BASE_URL apunta al backapp local
 pnpm dev                    # http://localhost:5173
 ```
 
-Necesita el backapp corriendo en `:8100`.
+Necesita el backapp corriendo en `:8110`.
 
 ## Scripts
 
