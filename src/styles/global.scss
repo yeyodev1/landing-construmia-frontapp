@@ -110,6 +110,48 @@ label {
   outline-offset: 2px;
 }
 
+// Barras de scroll de marca: delgadas, riel transparente y pulgar cálido.
+// Se aplican a todo (página, modales, listas) para que ninguna se vea del sistema.
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba($ink-muted, 0.45) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba($ink-muted, 0.4);
+  border-radius: $radius-pill;
+  // El borde transparente separa el pulgar del contenido y lo deja más fino.
+  border: 2px solid transparent;
+  background-clip: padding-box;
+
+  &:hover {
+    background-color: rgba($accent, 0.7);
+  }
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+// En secciones oscuras el pulgar se aclara para que se vea.
+.is-dark,
+[data-theme='dark'] {
+  scrollbar-color: rgba($on-night, 0.35) transparent;
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($on-night, 0.3);
+  }
+}
+
 ::selection {
   background: $accent-soft;
   color: $ink;
