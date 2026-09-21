@@ -37,7 +37,7 @@ const icons: Record<string, string> = {
   right: 1rem;
   left: 1rem;
   @include flex(column, stretch, flex-end, 0.6rem);
-  z-index: 300;
+  z-index: 400; // por encima del modal de cualificación (300)
   pointer-events: none;
 
   @include from('md') {
