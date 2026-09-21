@@ -1,7 +1,11 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useLeadStore } from '@/stores/lead'
 import { site } from '@/config/site'
 
+/**
+ * El embudo: registro (/) → video y cualificación (/video) → agenda (/agendar).
+ * Vía rápida: /pago (visita técnica) → /pago/respuesta → /agendar.
+ */
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -10,16 +14,35 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: site.name },
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/LoginView.vue'),
-    meta: { title: 'Ingresar', guestOnly: true },
+    path: '/video',
+    name: 'Video',
+    component: () => import('@/views/VideoView.vue'),
+    meta: { title: 'El método Construmia 380', requiresLead: true },
   },
   {
-    path: '/cuenta',
-    name: 'Account',
-    component: () => import('@/views/AccountView.vue'),
-    meta: { title: 'Mi cuenta', requiresAuth: true },
+    path: '/agendar',
+    name: 'Schedule',
+    component: () => import('@/views/ScheduleView.vue'),
+    meta: { title: 'Agenda tu visita técnica', requiresLead: true, requiresUnlock: true },
+  },
+  {
+    path: '/pago',
+    name: 'Pay',
+    component: () => import('@/views/PayView.vue'),
+    meta: { title: 'Reserva tu visita técnica', requiresLead: true },
+  },
+  {
+    // Payphone redirige acá con ?id=&clientTransactionId=
+    path: '/pago/respuesta',
+    name: 'PayResponse',
+    component: () => import('@/views/PayResponseView.vue'),
+    meta: { title: 'Confirmando tu pago' },
+  },
+  {
+    path: '/gracias',
+    name: 'Thanks',
+    component: () => import('@/views/ThanksView.vue'),
+    meta: { title: 'Gracias', requiresLead: true },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -32,8 +55,6 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  // Con "atrás" el navegador devuelve la posición guardada; con un hash se
-  // baja a la sección; si no, arriba.
   scrollBehavior(to, _from, savedPosition) {
     if (savedPosition) return savedPosition
     if (to.hash) return { el: to.hash, behavior: 'smooth' }
@@ -41,20 +62,17 @@ const router = createRouter({
   },
 })
 
-router.beforeEach(async (to) => {
-  const userStore = useUserStore()
+router.beforeEach((to) => {
+  const leadStore = useLeadStore()
 
-  if (to.meta.requiresAuth || to.meta.guestOnly) {
-    // La sesión se verifica contra el API una sola vez por carga.
-    await userStore.restore()
+  // Sin registro no hay video ni agenda: se vuelve al formulario.
+  if (to.meta.requiresLead && !leadStore.isRegistered) {
+    return { name: 'Home', hash: '#registro', replace: true }
   }
 
-  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-    return { name: 'Login', query: { next: to.fullPath }, replace: true }
-  }
-
-  if (to.meta.guestOnly && userStore.isAuthenticated) {
-    return { name: 'Account', replace: true }
+  // La agenda se abre al calificar o al pagar la visita.
+  if (to.meta.requiresUnlock && !leadStore.canSchedule) {
+    return { name: 'Video', replace: true }
   }
 })
 
