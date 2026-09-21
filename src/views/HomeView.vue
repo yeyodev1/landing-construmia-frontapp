@@ -11,10 +11,12 @@ import LandingGuarantees from '@/components/landing/LandingGuarantees.vue'
 import LandingFaq from '@/components/landing/LandingFaq.vue'
 import LandingFinalCta from '@/components/landing/LandingFinalCta.vue'
 import LandingStickyCta from '@/components/landing/LandingStickyCta.vue'
+import LeadModal from '@/components/lead/LeadModal.vue'
 </script>
 
 <template>
-  <!-- Ritmo: noche, papel, arena, noche... Cada sección termina en un CTA que baja a #registro. -->
+  <!-- Ritmo: noche, papel, arena, noche... El inicio es el video; cada sección termina en un CTA
+       que abre el registro en modal, y el final deja el formulario completo (#registro). -->
   <div class="home">
     <LandingHero />
     <LandingProblem />
@@ -28,5 +30,6 @@ import LandingStickyCta from '@/components/landing/LandingStickyCta.vue'
     <LandingFaq />
     <LandingFinalCta />
     <LandingStickyCta />
+    <LeadModal />
   </div>
 </template>
