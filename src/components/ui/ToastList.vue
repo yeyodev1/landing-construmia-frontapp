@@ -21,7 +21,7 @@ const icons: Record<string, string> = {
           :class="`toasts__item--${toast.type}`"
           @click="toastStore.dismiss(toast.id)"
         >
-          <i :class="icons[toast.type]"></i>
+          <i :class="icons[toast.type]" aria-hidden="true"></i>
           <span>{{ toast.message }}</span>
         </div>
       </TransitionGroup>
@@ -32,11 +32,20 @@ const icons: Record<string, string> = {
 <style scoped lang="scss">
 .toasts {
   position: fixed;
-  bottom: 1.4rem;
-  right: 1.4rem;
-  @include flex(column, stretch, flex-start, 0.6rem);
+  // En móvil, por encima de la barra fija del CTA (misma altura que el aviso de actividad).
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  right: 1rem;
+  left: 1rem;
+  @include flex(column, stretch, flex-end, 0.6rem);
   z-index: 300;
-  max-width: min(360px, calc(100vw - 2.8rem));
+  pointer-events: none;
+
+  @include from('md') {
+    bottom: calc(1.4rem + env(safe-area-inset-bottom));
+    right: 1.4rem;
+    left: auto;
+    max-width: 360px;
+  }
 
   &__item {
     @include flex(row, center, flex-start, 0.7rem);
@@ -47,6 +56,7 @@ const icons: Record<string, string> = {
     border-radius: $radius-sm;
     box-shadow: $shadow-md;
     cursor: pointer;
+    pointer-events: auto;
 
     i {
       color: $accent-soft;
