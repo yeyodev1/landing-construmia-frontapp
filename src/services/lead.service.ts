@@ -1,5 +1,5 @@
 import APIBase from './httpBase'
-import type { Lead, LeadContactPayload, QualificationAnswers, RecentActivity } from '@/types'
+import type { Lead, LeadContactPayload, LeadMeta, QualificationAnswers, RecentActivity } from '@/types'
 
 class LeadService extends APIBase {
   /** Paso 1: crea (o actualiza, si el correo ya existe) el contacto. */
@@ -9,8 +9,8 @@ class LeadService extends APIBase {
   }
 
   /** Paso 2: guarda la cualificación y devuelve si el proyecto califica. */
-  async qualify(id: string, answers: QualificationAnswers): Promise<Lead> {
-    const { data } = await this.put<{ lead: Lead }>(`leads/${id}/qualification`, answers)
+  async qualify(id: string, answers: QualificationAnswers, meta?: LeadMeta): Promise<Lead> {
+    const { data } = await this.put<{ lead: Lead }>(`leads/${id}/qualification`, { ...answers, meta })
     return data.lead
   }
 
@@ -19,9 +19,9 @@ class LeadService extends APIBase {
     return data.lead
   }
 
-  async recent(): Promise<RecentActivity[]> {
-    const { data } = await this.get<{ items: RecentActivity[] }>('leads/recent')
-    return data.items
+  async recent(): Promise<{ items: RecentActivity[]; total: number }> {
+    const { data } = await this.get<{ items: RecentActivity[]; total: number }>('leads/recent')
+    return data
   }
 }
 
