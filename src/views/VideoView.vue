@@ -59,11 +59,11 @@ function openQualify() {
 
         <div class="stage__screen">
           <WistiaPlayer ref="player" :start-at="startAt" />
-          <p v-if="startAt > 0" class="stage__resumed">
-            <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
-            {{ copy.player.resumed }}
-          </p>
         </div>
+        <p v-if="startAt > 0" class="stage__resumed">
+          <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+          {{ copy.player.resumed }}
+        </p>
 
         <div class="stage__aside">
           <p class="stage__eyebrow">{{ copy.hero.eyebrow }}</p>
@@ -200,11 +200,13 @@ function openQualify() {
     }
   }
 
-  // Aviso discreto bajo la pantalla: confirma que no se perdió lo que ya vio.
+  // Aviso discreto bajo la pantalla (fuera del marco): confirma que no se perdió lo que ya vio.
+  // Comparte el `order` de la pantalla para quedar siempre justo debajo de ella.
   &__resumed {
     @include flex(row, center, flex-start, 0.5rem);
-    margin-top: 0.7rem;
-    padding-inline: 1.25rem;
+    flex: 1 1 100%;
+    order: 2;
+    margin-top: -0.75rem;
     font-size: 0.78rem;
     letter-spacing: 0.02em;
     color: rgba($on-night, 0.6);
@@ -214,8 +216,8 @@ function openQualify() {
       color: $accent-glow;
     }
 
-    @include from('md') {
-      padding-inline: 0;
+    @include from('lg') {
+      order: 3;
     }
   }
 
