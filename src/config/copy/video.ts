@@ -24,6 +24,8 @@ export const videoCopy = {
   },
 
   player: {
+    /** Viene de la vista previa de la home: el video retoma en el segundo donde se quedó. */
+    resumed: 'Seguimos donde lo dejaste',
     label: 'Video del método Construmia 380',
     loading: 'Cargando el video',
     error: 'No pudimos cargar el video. Revisa tu conexión.',
@@ -37,7 +39,7 @@ export const videoCopy = {
     doneLabel: 'Siguiente paso habilitado',
     doneTitle: 'Listo. Un experto puede tomar tu caso.',
     doneHint:
-      'Son 5 preguntas de un solo toque. Con eso revisamos si tu proyecto encaja con el método.',
+      'Son unas pocas preguntas de un solo toque. Con eso revisamos si tu proyecto encaja con el método.',
     button: 'Quiero que me atienda un experto',
     buttonWait: (time: string) => `Disponible en ${time}`,
     /** Lo que escucha un lector de pantalla: cada 30 s y al terminar, nunca cada segundo. */
