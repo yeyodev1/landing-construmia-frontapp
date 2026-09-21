@@ -21,15 +21,20 @@ const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(re
 /**
  * El cuestionario de cualificación: una pregunta por pantalla, avance automático,
  * respuestas parciales en sessionStorage (por lead) y el envío final con su reintento.
+ * Las respuestas que ya dio en el registro (el tipo de proyecto) no se repiten.
  */
 export function useQualification(options: { meta?: () => LeadMeta | undefined } = {}) {
   const router = useRouter()
   const leadStore = useLeadStore()
   const toast = useToastStore()
 
-  const questions = qualificationQuestions
-  const total = questions.length
   const storageKey = `construmia_qualify_${leadStore.lead?.id ?? 'anon'}`
+
+  // El tipo de proyecto se pregunta en el registro: si ya lo dio, no se le vuelve a preguntar
+  // y el cuestionario queda en 4 pasos. El PUT igual lleva las 5 respuestas (el backend las exige).
+  const known = knownAnswers()
+  const questions = qualificationQuestions.filter((q) => !known[q.key])
+  const total = questions.length
 
   const answers = ref<Answers>(restore())
   const index = ref(firstUnanswered())
@@ -44,6 +49,16 @@ export function useQualification(options: { meta?: () => LeadMeta | undefined } 
   const selected = computed(() => answers.value[question.value.key] ?? null)
   const canGoBack = computed(() => phase.value === 'questions' && index.value > 0 && !locked.value)
 
+  /** Respuestas que ya vienen del registro, solo si siguen siendo una opción válida. */
+  function knownAnswers(): Answers {
+    const out: Answers = {}
+    const projectType = leadStore.lead?.projectType
+    const typeQuestion = qualificationQuestions.find((q) => q.key === 'projectType')
+    if (projectType && typeQuestion?.options.some((option) => option.value === projectType))
+      out.projectType = projectType
+    return out
+  }
+
   function restore(): Answers {
     try {
       const raw = sessionStorage.getItem(storageKey)
@@ -54,9 +69,9 @@ export function useQualification(options: { meta?: () => LeadMeta | undefined } 
         const value = saved[q.key]
         if (value && q.options.some((option) => option.value === value)) clean[q.key] = value
       }
-      return clean
+      return { ...clean, ...known }
     } catch {
-      return {}
+      return { ...known }
     }
   }
 
@@ -105,6 +120,8 @@ export function useQualification(options: { meta?: () => LeadMeta | undefined } 
   }
 
   async function submit() {
+    // Lo que venga del registro manda: una respuesta vieja guardada en la sesión no lo pisa.
+    answers.value = { ...answers.value, ...known }
     const missing = questions.findIndex((q) => !answers.value[q.key])
     if (missing !== -1) {
       direction.value = 'back'
