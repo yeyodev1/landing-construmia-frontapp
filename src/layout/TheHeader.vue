@@ -1,43 +1,80 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { site } from '@/config/site'
-import { useUserStore } from '@/stores/user'
-import { useBodyScroll } from '@/composables/useBodyScroll'
+import { headerCopy, stepByRoute } from '@/config/copy/shell'
 
+/**
+ * Header de embudo, no de sitio web: sin menú, porque cada enlace es una salida.
+ * En la landing ofrece el único camino (bajar al registro); en el resto dice en qué paso va la persona.
+ */
 const route = useRoute()
-const userStore = useUserStore()
-const mobileOpen = ref(false)
+const scrolled = ref(false)
 
-useBodyScroll(mobileOpen)
+const progress = computed(() => stepByRoute[String(route.name)] ?? null)
 
-// Al navegar se cierra el menú móvil.
-watch(() => route.fullPath, () => (mobileOpen.value = false))
+const steps = computed(() =>
+  headerCopy.steps.map((step, index) => ({
+    ...step,
+    number: String(index + 1).padStart(2, '0'),
+    done: !!progress.value && index < progress.value.done,
+    current: progress.value?.current === index,
+  })),
+)
+
+function onScroll() {
+  scrolled.value = window.scrollY > 8
+}
+
+// En la landing el router no re-navega a un hash en el que ya está: se baja a mano.
+function goToForm(event: MouseEvent) {
+  if (route.name !== 'Home') return
+  const target = document.querySelector(headerCopy.ctaTarget)
+  if (!target) return
+  event.preventDefault()
+  const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
+}
+
+onMounted(() => {
+  onScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+
+onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 </script>
 
 <template>
-  <header class="header">
+  <header class="header" :class="{ 'header--scrolled': scrolled }">
     <div class="header__inner">
-      <RouterLink to="/" class="header__logo">{{ site.name }}</RouterLink>
+      <RouterLink to="/" class="header__logo" :aria-label="headerCopy.homeLabel">
+        <img :src="site.logo" :alt="site.name" width="315" height="213" />
+      </RouterLink>
 
-      <nav class="header__nav" :class="{ 'header__nav--open': mobileOpen }">
-        <RouterLink v-for="link in site.nav" :key="link.to" :to="link.to" class="header__link">
-          {{ link.label }}
-        </RouterLink>
-        <RouterLink v-if="userStore.isAuthenticated" to="/cuenta" class="header__link">
-          Mi cuenta
-        </RouterLink>
-        <RouterLink v-else to="/login" class="btn btn--primary header__cta">Ingresar</RouterLink>
-      </nav>
+      <ol v-if="progress" class="steps" :aria-label="headerCopy.progressLabel">
+        <li
+          v-for="step in steps"
+          :key="step.key"
+          class="steps__item"
+          :class="{ 'steps__item--done': step.done, 'steps__item--current': step.current }"
+          :aria-current="step.current ? 'step' : undefined"
+        >
+          <span class="steps__body">
+            <span class="steps__number" aria-hidden="true">{{ step.number }}</span>
+            <span class="steps__label">{{ step.label }}</span>
+            <span v-if="step.done" class="visually-hidden">({{ headerCopy.doneLabel }})</span>
+          </span>
+        </li>
+      </ol>
 
-      <button
-        class="header__burger"
-        :aria-label="mobileOpen ? 'Cerrar menú' : 'Abrir menú'"
-        :aria-expanded="mobileOpen"
-        @click="mobileOpen = !mobileOpen"
+      <RouterLink
+        v-else
+        :to="{ name: 'Home', hash: headerCopy.ctaTarget }"
+        class="btn btn--dark header__cta"
+        @click="goToForm"
       >
-        <i :class="mobileOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars'"></i>
-      </button>
+        {{ headerCopy.cta }}
+      </RouterLink>
     </div>
   </header>
 </template>
@@ -47,69 +84,165 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba($paper, 0.92);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid $line;
+  background: $paper;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.3s $ease,
+    border-color 0.3s $ease;
+
+  // Arriba del todo el header es papel liso; al bajar se vuelve un velo sobre las fotos.
+  &--scrolled {
+    background: rgba($paper, 0.84);
+    backdrop-filter: saturate(1.4) blur(12px);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    border-color: $line;
+  }
 
   &__inner {
-    @include container;
+    @include container(1280px);
     @include flex(row, center, space-between, 1rem);
-    padding-block: 0.85rem;
+    min-height: 60px;
+    padding-block: 0.6rem;
+
+    @include from('md') {
+      min-height: 72px;
+    }
   }
 
   &__logo {
-    @include display($text-xl, 600);
-    color: $ink;
-  }
+    flex: none;
+    display: flex;
+    border-radius: 4px;
 
-  &__nav {
-    display: none;
+    img {
+      height: 44px;
+      width: auto;
 
-    @include from('md') {
-      @include flex(row, center, flex-end, 1.75rem);
-    }
-
-    &--open {
-      @include until('md') {
-        @include flex(column, stretch, flex-start, 0.5rem);
-        position: fixed;
-        inset: 0;
-        top: 61px;
-        background: $paper;
-        padding: 1.5rem 1.25rem;
-        z-index: 90;
+      @include from('md') {
+        height: 52px;
       }
     }
   }
 
-  &__link {
-    @include eyebrow;
-    color: $ink-soft;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid transparent;
-    @include transition;
+  &__cta {
+    padding: 0.6rem 1.15rem;
+    font-size: 0.74rem;
+    white-space: nowrap;
 
-    &:hover,
-    &.router-link-active {
+    @include from('md') {
+      padding: 0.7rem 1.4rem;
+      font-size: 0.78rem;
+    }
+  }
+}
+
+.steps {
+  @include flex(row, center, flex-end, 0);
+  list-style: none;
+  min-width: 0;
+
+  &__item {
+    @include flex(row, center, flex-start, 0);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: $ink-muted;
+    white-space: nowrap;
+    transition: color 0.3s $ease;
+
+    @include from('md') {
+      font-size: 0.7rem;
+    }
+
+    // Regla entre pasos: una línea de plano, no una flecha.
+    & + & {
+      margin-left: 0.5rem;
+
+      &::before {
+        content: '';
+        width: 0.9rem;
+        height: 1px;
+        margin-right: 0.5rem;
+        background: $line;
+
+        @include from('sm') {
+          width: 1.6rem;
+          margin-right: 0.9rem;
+        }
+      }
+
+      @include from('sm') {
+        margin-left: 0.9rem;
+      }
+    }
+
+    &--done {
       color: $accent-deep;
-      border-color: $accent;
+
+      & + .steps__item::before {
+        background: $accent;
+      }
+    }
+
+    &--current {
+      color: $ink;
     }
   }
 
-  &__cta {
-    padding: 0.6rem 1.3rem;
-    font-size: $text-xs;
+  &__body {
+    @include flex(row, baseline, flex-start, 0.4rem);
+    position: relative;
+    padding-block: 0.4rem;
+
+    // Subrayado de cobre solo bajo el paso en curso.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0;
+      height: 1.5px;
+      background: $accent;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.4s $ease;
+    }
+
+    .steps__item--current &::after {
+      transform: scaleX(1);
+    }
   }
 
-  &__burger {
-    font-size: 1.3rem;
-    color: $ink;
-    width: 2.4rem;
-    height: 2.4rem;
-    @include flex(row, center, center);
+  &__number {
+    font-family: $font-display;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    font-variant-numeric: lining-nums;
+  }
 
-    @include from('md') {
-      display: none;
+  // En móvil solo el paso actual lleva nombre a la vista; el resto queda en su número,
+  // pero el lector de pantalla sigue leyendo los tres nombres.
+  &__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+
+    @mixin shown {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+    }
+
+    .steps__item--current & {
+      @include shown;
+    }
+
+    @include from('sm') {
+      @include shown;
     }
   }
 }
