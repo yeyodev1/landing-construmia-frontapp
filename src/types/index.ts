@@ -51,6 +51,8 @@ export interface LeadContactPayload {
   /** Número nacional, solo dígitos, sin el 0 inicial */
   phone: string
   startTimeframe: string
+  /** Primera pregunta del registro (value de PROJECT_TYPES). */
+  projectType?: string
   commitment: boolean
   utm?: UtmParams
   pageUrl?: string
@@ -73,6 +75,8 @@ export interface Lead {
   lastName: string
   email: string
   phoneE164: string
+  /** '' si aún no lo eligió; si viene, la cualificación no lo vuelve a preguntar. */
+  projectType: string
   stage: LeadStage
   qualified: boolean | null
   paid: boolean
