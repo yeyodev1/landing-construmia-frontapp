@@ -75,7 +75,7 @@ function onLink(to: RouteLocationRaw) {
   // En móvil va por encima de la barra fija del CTA (StickyCta): 88 px + la zona segura.
   // Una vista con otra altura de barra puede ajustarlo con --activity-offset.
   bottom: calc(var(--activity-offset, 88px) + env(safe-area-inset-bottom));
-  z-index: 150; // sobre el header (100), debajo de modales (200) y toasts (300)
+  z-index: 150; // sobre el header (100), debajo de modales (300) y toasts (400)
   width: min(320px, calc(100vw - 2rem));
   pointer-events: none;
 
