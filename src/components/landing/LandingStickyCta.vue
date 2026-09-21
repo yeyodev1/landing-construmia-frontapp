@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import FormCta from '@/components/landing/FormCta.vue'
 import { useStickyCta } from '@/composables/useStickyCta'
+import { useLeadModal } from '@/composables/useLeadModal'
 import { FORM_ANCHOR, stickyCta } from '@/config/copy/landing'
 
 // Solo en móvil: en desktop el header ya lleva el CTA a la vista todo el tiempo.
-const { visible } = useStickyCta(FORM_ANCHOR)
+// Aparece al dejar atrás el video y se va al llegar al formulario del final o con el modal abierto.
+const { visible: inRange } = useStickyCta('#inicio', FORM_ANCHOR)
+const { isOpen } = useLeadModal()
+const visible = computed(() => inRange.value && !isOpen.value)
 </script>
 
 <template>
