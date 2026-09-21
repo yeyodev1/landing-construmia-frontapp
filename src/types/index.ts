@@ -25,6 +25,12 @@ export interface SessionUser {
 
 export type LeadStage = 'contacto' | 'cualificacion' | 'pago'
 
+/** Señales de comportamiento que el CRM recibe en las notas del lead. */
+export interface LeadMeta {
+  timeOnPageSeconds: number
+  device: 'mobile' | 'desktop'
+}
+
 export interface UtmParams {
   source?: string
   medium?: string
@@ -48,6 +54,7 @@ export interface LeadContactPayload {
   commitment: boolean
   utm?: UtmParams
   pageUrl?: string
+  meta?: LeadMeta
 }
 
 /** PUT /leads/:id/qualification */
@@ -71,7 +78,7 @@ export interface Lead {
   paid: boolean
 }
 
-/** GET /leads/recent — actividad REAL para los avisos de abajo a la izquierda. */
+/** GET /leads/recent → `{ items, total }`; `total` = registros reales acumulados. */
 export interface RecentActivity {
   firstName: string
   location: string
