@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import BookingCalendar from '@/components/schedule/BookingCalendar.vue'
+import ScheduleChoice from '@/components/schedule/ScheduleChoice.vue'
 import { useLeadStore } from '@/stores/lead'
 import { useReveal } from '@/composables/useReveal'
 import { cld, cldSet, media } from '@/config/media'
@@ -32,20 +33,12 @@ onMounted(() => leadStore.refresh())
         <p class="schedule__lead">{{ head.lead }}</p>
       </header>
 
-      <aside v-if="!leadStore.hasPaid" class="schedule__reminder" aria-labelledby="schedule-price">
-        <span class="schedule__reminder-price" aria-hidden="true">{{ copy.priceReminder.amount }}</span>
-        <div class="schedule__reminder-body">
-          <h2 id="schedule-price" class="schedule__reminder-title">{{ copy.priceReminder.title }}</h2>
-          <p>{{ copy.priceReminder.text }}</p>
-          <RouterLink :to="{ name: 'Pay' }" class="schedule__reminder-link">
-            {{ copy.priceReminder.action }}
-            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-          </RouterLink>
-        </div>
-      </aside>
-
-      <h2 class="visually-hidden">{{ copy.calendarTitle }}</h2>
-      <BookingCalendar class="schedule__calendar" />
+      <!-- El calendario es el beneficio del pase premium: solo se abre con la visita pagada. -->
+      <template v-if="leadStore.hasPaid">
+        <h2 class="visually-hidden">{{ copy.calendarTitle }}</h2>
+        <BookingCalendar class="schedule__calendar" />
+      </template>
+      <ScheduleChoice v-else />
     </section>
 
     <section ref="expectRef" class="schedule__expect" aria-labelledby="schedule-expect">
@@ -127,53 +120,6 @@ onMounted(() => leadStore.refresh())
     font-size: $text-lg;
     line-height: 1.5;
     color: $ink-soft;
-  }
-
-  // Recordatorio del costo: informa, no presiona. Una línea de cobre, sin caja de alerta.
-  &__reminder {
-    @include flex(row, flex-start, flex-start, 1rem);
-    margin-top: 1.75rem;
-    padding: 1.1rem 0 1.1rem 1.1rem;
-    border-left: 2px solid $accent;
-    font-size: $text-sm;
-    color: $ink-soft;
-  }
-
-  &__reminder-price {
-    @include display($text-xl, 400);
-    flex: 0 0 auto;
-    line-height: 1;
-    color: $accent-deep;
-  }
-
-  &__reminder-body {
-    @include flex(column, flex-start, flex-start, 0.3rem);
-    min-width: 0;
-  }
-
-  &__reminder-title {
-    font-family: $font-principal;
-    font-size: $text-base;
-    font-weight: 600;
-    color: $ink;
-  }
-
-  &__reminder-link {
-    @include flex(row, center, flex-start, 0.45rem);
-    min-height: 2.75rem;
-    font-weight: 600;
-    color: $accent-deep;
-
-    i {
-      font-size: 0.8em;
-      transition: transform 0.25s $ease;
-    }
-
-    @media (hover: hover) {
-      &:hover i {
-        transform: translateX(3px);
-      }
-    }
   }
 
   &__calendar {
