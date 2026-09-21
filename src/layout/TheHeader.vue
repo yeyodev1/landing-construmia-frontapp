@@ -29,11 +29,13 @@ function onScroll() {
 // En la landing el router no re-navega a un hash en el que ya está: se baja a mano.
 function goToForm(event: MouseEvent) {
   if (route.name !== 'Home') return
-  const target = document.querySelector(headerCopy.ctaTarget)
+  const target = document.querySelector<HTMLElement>(headerCopy.ctaTarget)
   if (!target) return
   event.preventDefault()
   const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
+  // Igual que FormCta: el foco va al formulario para teclado y lectores de pantalla.
+  target.focus({ preventScroll: true })
 }
 
 onMounted(() => {
