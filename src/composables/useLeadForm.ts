@@ -4,10 +4,12 @@ import { useLeadStore } from '@/stores/lead'
 import { useToastStore } from '@/stores/toast'
 import { DEFAULT_COUNTRY, findCountry } from '@/composables/useCountryPicker'
 import { usePageTime } from '@/composables/usePageTime'
+import { useLeadModal } from '@/composables/useLeadModal'
 import { form as copy } from '@/config/copy/landing'
 import type { ApiError, LeadContactPayload, UtmParams } from '@/types'
 
 export type LeadField =
+  | 'projectType'
   | 'firstName'
   | 'lastName'
   | 'email'
@@ -15,7 +17,9 @@ export type LeadField =
   | 'startTimeframe'
   | 'commitment'
 
+// En orden de pantalla: el foco va al primero que falló.
 const FIELDS: LeadField[] = [
+  'projectType',
   'firstName',
   'lastName',
   'email',
@@ -62,8 +66,14 @@ function captureAttribution(): { utm: UtmParams; pageUrl: string } {
   }
 }
 
-export function useLeadForm(idPrefix: string) {
+export interface LeadFormOptions {
+  /** Tipo de proyecto ya elegido en el paso 1 del modal: el formulario no lo vuelve a pedir. */
+  projectType?: () => string | undefined
+}
+
+export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
   const router = useRouter()
+  const { videoRoute } = useLeadModal()
   const leadStore = useLeadStore()
   const toastStore = useToastStore()
   const attribution = captureAttribution()
@@ -71,6 +81,7 @@ export function useLeadForm(idPrefix: string) {
   const pageTime = usePageTime()
 
   const values = reactive({
+    projectType: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -81,6 +92,7 @@ export function useLeadForm(idPrefix: string) {
   })
 
   const errors = reactive<Record<LeadField, string>>({
+    projectType: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -90,6 +102,7 @@ export function useLeadForm(idPrefix: string) {
   })
 
   const touched = reactive<Record<LeadField, boolean>>({
+    projectType: false,
     firstName: false,
     lastName: false,
     email: false,
@@ -106,9 +119,17 @@ export function useLeadForm(idPrefix: string) {
   const country = computed(() => findCountry(values.phoneCountry))
   const showResume = computed(() => leadStore.isRegistered && !editing.value)
   const resumeName = computed(() => leadStore.lead?.firstName ?? '')
+  const fixedProjectType = computed(() => options.projectType?.() || '')
+  /** Sin tipo elegido antes (formulario inline), el select es el primer campo. */
+  const asksProjectType = computed(() => !fixedProjectType.value)
+  const fields = computed(() =>
+    asksProjectType.value ? FIELDS : FIELDS.filter((field) => field !== 'projectType'),
+  )
 
   function messageFor(field: LeadField): string {
     switch (field) {
+      case 'projectType':
+        return fixedProjectType.value || values.projectType ? '' : copy.errors.projectType
       case 'firstName':
         return values.firstName.trim().length >= 2 ? '' : copy.errors.firstName
       case 'lastName':
@@ -168,6 +189,7 @@ export function useLeadForm(idPrefix: string) {
       phoneDial: country.value.dial,
       phone: toNationalNumber(values.phone),
       startTimeframe: values.startTimeframe,
+      projectType: fixedProjectType.value || values.projectType,
       commitment: values.commitment,
       utm: attribution.utm,
       pageUrl: attribution.pageUrl,
@@ -178,9 +200,9 @@ export function useLeadForm(idPrefix: string) {
   async function submit() {
     if (loading.value) return
 
-    FIELDS.forEach((field) => (touched[field] = true))
+    fields.value.forEach((field) => (touched[field] = true))
     // Se validan todos (para marcar cada error), y el foco va al primero que falló.
-    const firstInvalid = FIELDS.map((field) => (validate(field) ? null : field)).find(Boolean)
+    const firstInvalid = fields.value.map((field) => (validate(field) ? null : field)).find(Boolean)
     if (firstInvalid) {
       summary.value = copy.errors.summary
       await nextTick()
@@ -192,7 +214,7 @@ export function useLeadForm(idPrefix: string) {
     loading.value = true
     try {
       await leadStore.register(buildPayload())
-      await router.push({ name: 'Video' })
+      await router.push(videoRoute())
     } catch (error) {
       toastStore.error((error as ApiError)?.message || copy.errors.fallback)
     } finally {
@@ -201,7 +223,7 @@ export function useLeadForm(idPrefix: string) {
   }
 
   function resume() {
-    router.push({ name: leadStore.canSchedule ? 'Schedule' : 'Video' })
+    router.push(leadStore.canSchedule ? { name: 'Schedule' } : videoRoute())
   }
 
   return {
@@ -213,6 +235,7 @@ export function useLeadForm(idPrefix: string) {
     country,
     showResume,
     resumeName,
+    asksProjectType,
     blur,
     input,
     countryChanged,
