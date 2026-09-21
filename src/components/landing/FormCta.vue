@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { FORM_ANCHOR } from '@/config/copy/landing'
+import { useLeadModal } from '@/composables/useLeadModal'
 
 /**
- * El único CTA de la landing: baja al formulario. Se hace a mano (y no con el hash) porque
- * el router no re-navega a un hash en el que ya está, y así el foco llega al formulario
- * sin abrir el teclado en móvil.
+ * El CTA de la landing: abre el registro en modal, paso 1 (tipo de proyecto).
+ * Quien ya se registró sigue directo en su paso del embudo.
  */
 withDefaults(
   defineProps<{
@@ -15,26 +14,20 @@ withDefaults(
   { variant: 'primary', block: false },
 )
 
-function goToForm(event: MouseEvent) {
-  const target = document.querySelector<HTMLElement>(FORM_ANCHOR)
-  if (!target) return
-  event.preventDefault()
-  const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
-  target.focus({ preventScroll: true })
-}
+const { open } = useLeadModal()
 </script>
 
 <template>
-  <a
-    :href="FORM_ANCHOR"
+  <button
+    type="button"
     class="btn btn--lg form-cta"
     :class="[`btn--${variant}`, { 'btn--block': block }]"
-    @click="goToForm"
+    aria-haspopup="dialog"
+    @click="open('cta')"
   >
     {{ label }}
-    <i class="fa-solid fa-arrow-down form-cta__icon" aria-hidden="true"></i>
-  </a>
+    <i class="fa-solid fa-arrow-right form-cta__icon" aria-hidden="true"></i>
+  </button>
 </template>
 
 <style scoped lang="scss">
@@ -54,7 +47,7 @@ function goToForm(event: MouseEvent) {
   }
 
   &:hover &__icon {
-    transform: translateY(2px);
+    transform: translateX(3px);
   }
 }
 </style>
