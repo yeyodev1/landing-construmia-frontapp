@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { embeds } from '@/config/site'
 import { videoCopy } from '@/config/copy/video'
 import { useLeadStore } from '@/stores/lead'
@@ -10,6 +11,7 @@ import FastLaneCard from '@/components/video/FastLaneCard.vue'
 import TrustStrip from '@/components/video/TrustStrip.vue'
 import QualifyModal from '@/components/qualify/QualifyModal.vue'
 
+const route = useRoute()
 const leadStore = useLeadStore()
 const copy = videoCopy
 // El CRM recibe cuánto tiempo pasó la persona con el video antes de cualificar.
@@ -20,6 +22,13 @@ const qualifyOpen = ref(false)
 
 const firstName = computed(() => leadStore.lead?.firstName?.trim() ?? '')
 const countdownKey = computed(() => `construmia_unlock_${leadStore.lead?.id ?? 'anon'}`)
+// La vista previa de la home manda ?t=<segundos> para retomar el video; cualquier valor raro es 0.
+const MAX_START = 600
+const startAt = computed(() => {
+  const raw = Array.isArray(route.query.t) ? route.query.t[0] : route.query.t
+  const value = Number(raw)
+  return Number.isInteger(value) && value > 0 && value <= MAX_START ? value : 0
+})
 const notice = computed(() => (leadStore.hasPaid ? copy.notice.paid : copy.notice.qualified))
 
 function openQualify() {
@@ -49,7 +58,11 @@ function openQualify() {
         </header>
 
         <div class="stage__screen">
-          <WistiaPlayer ref="player" />
+          <WistiaPlayer ref="player" :start-at="startAt" />
+          <p v-if="startAt > 0" class="stage__resumed">
+            <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+            {{ copy.player.resumed }}
+          </p>
         </div>
 
         <div class="stage__aside">
@@ -184,6 +197,25 @@ function openQualify() {
 
     @include from('lg') {
       order: 3;
+    }
+  }
+
+  // Aviso discreto bajo la pantalla: confirma que no se perdió lo que ya vio.
+  &__resumed {
+    @include flex(row, center, flex-start, 0.5rem);
+    margin-top: 0.7rem;
+    padding-inline: 1.25rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: rgba($on-night, 0.6);
+    animation: stage-rise 0.5s $ease 0.6s both;
+
+    i {
+      color: $accent-glow;
+    }
+
+    @include from('md') {
+      padding-inline: 0;
     }
   }
 
