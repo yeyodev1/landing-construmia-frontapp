@@ -10,6 +10,8 @@ const props = defineProps<{
   label: string
   placeholder: string
   error: string
+  /** Número ya validado en formato internacional; vacío mientras no lo esté. */
+  valid?: string
 }>()
 
 const emit = defineEmits<{ blur: []; input: []; countryChange: [] }>()
@@ -34,10 +36,10 @@ function onSearchKeydown(event: KeyboardEvent) {
   if (country.value !== before) emit('countryChange')
 }
 
-/** Solo dígitos y espacios: letras y símbolos ni siquiera llegan a escribirse. */
+/** Dígitos, espacios y el + del prefijo: letras y otros símbolos ni siquiera llegan a escribirse. */
 function onInput(event: Event) {
   const target = event.target as HTMLInputElement
-  const clean = target.value.replace(/[^\d\s]/g, '')
+  const clean = target.value.replace(/[^\d\s+]/g, '').replace(/(?!^)\+/g, '')
   if (clean !== target.value) target.value = clean
   number.value = clean
   emit('input')
@@ -48,7 +50,7 @@ function onInput(event: Event) {
   <div class="field phone" :class="{ 'field--invalid': error }">
     <label :for="id">{{ label }}</label>
 
-    <div ref="root" class="phone__control" :class="{ 'phone__control--invalid': error }">
+    <div ref="root" class="phone__control" :class="{ 'phone__control--invalid': error, 'phone__control--valid': valid && !error }">
       <button
         ref="trigger"
         type="button"
@@ -73,9 +75,9 @@ function onInput(event: Event) {
         inputmode="tel"
         autocomplete="tel-national"
         :placeholder="placeholder"
-        :maxlength="current.max + 5"
+        :maxlength="20"
         :aria-invalid="!!error"
-        :aria-describedby="`${id}-error`"
+        :aria-describedby="`${id}-error ${id}-valid`"
         required
         @input="onInput"
         @blur="emit('blur')"
@@ -98,6 +100,12 @@ function onInput(event: Event) {
     </div>
 
     <p :id="`${id}-error`" class="field__error" aria-live="polite">{{ error }}</p>
+    <p :id="`${id}-valid`" class="phone__valid" aria-live="polite">
+      <template v-if="valid && !error">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        {{ copy.fields.phone.valid }} <strong>{{ valid }}</strong>
+      </template>
+    </p>
   </div>
 </template>
 
@@ -121,6 +129,25 @@ function onInput(event: Event) {
 
     &--invalid {
       border-color: $danger;
+    }
+
+    &--valid {
+      border-color: $success;
+    }
+  }
+
+  &__valid {
+    @include flex(row, center, flex-start, 0.4rem);
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: $success;
+
+    &:empty {
+      display: none;
+    }
+
+    strong {
+      font-variant-numeric: tabular-nums;
     }
   }
 

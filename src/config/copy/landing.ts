@@ -60,7 +60,11 @@ export const form = {
     firstName: { label: 'Nombre', placeholder: 'Tu nombre' },
     lastName: { label: 'Apellido', placeholder: 'Tu apellido' },
     email: { label: 'Correo', placeholder: 'tucorreo@ejemplo.com' },
-    phone: { label: 'Teléfono (WhatsApp)', placeholder: '99 123 4567' },
+    phone: {
+      label: 'Teléfono (WhatsApp)',
+      placeholder: '099 123 4567',
+      valid: 'Número habilitado:',
+    },
     projectType: { label: projectTypeQuestion.title, placeholder: 'Elige una opción' },
     startTimeframe: {
       label: '¿Cuándo quieres arrancar tu proyecto?',
@@ -84,10 +88,9 @@ export const form = {
     emailRequired: 'Escribe tu correo',
     emailInvalid: 'Revisa el correo: parece incompleto',
     phoneRequired: 'Escribe tu número de teléfono',
-    phoneLength: (min: number, max: number, country: string) =>
-      min === max
-        ? `En ${country} el número tiene ${min} dígitos, sin el 0 inicial`
-        : `En ${country} el número tiene entre ${min} y ${max} dígitos, sin el 0 inicial`,
+    phoneInvalid: (country: string) =>
+      `Ese número no existe en ${country}. Escribe tu celular con WhatsApp, por ejemplo 099 123 4567`,
+    phoneCountry: 'Ese número es de un país que no está en la lista: elige el país correcto',
     projectType: 'Elige qué quieres transformar',
     startTimeframe: 'Elige cuándo quieres arrancar',
     commitment: 'Para continuar necesitamos tu compromiso con el proceso',

@@ -6,6 +6,7 @@ import { DEFAULT_COUNTRY, findCountry } from '@/composables/useCountryPicker'
 import { usePageTime } from '@/composables/usePageTime'
 import { useLeadModal } from '@/composables/useLeadModal'
 import { form as copy } from '@/config/copy/landing'
+import { parsePhone } from '@/utils/phone'
 import type { ApiError, LeadContactPayload, UtmParams } from '@/types'
 
 export type LeadField =
@@ -32,11 +33,6 @@ const UTM_KEY = 'construmia_utm'
 const LANDING_URL_KEY = 'construmia_landing_url'
 const UTM_NAMES = ['source', 'medium', 'campaign', 'content', 'term'] as const
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-
-/** Número nacional: solo dígitos y sin el 0 inicial ("099 123 4567" → "991234567"). */
-export function toNationalNumber(raw: string): string {
-  return raw.replace(/\D/g, '').replace(/^0+/, '')
-}
 
 /**
  * Los UTM llegan en la URL del anuncio. Se guardan en sessionStorage apenas carga la
@@ -117,6 +113,12 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
   const editing = ref(false)
 
   const country = computed(() => findCountry(values.phoneCountry))
+  const parsedPhone = computed(() => parsePhone(values.phone, values.phoneCountry))
+  /** Solo se confirma un número que además sea de un país del selector. */
+  const phoneOk = computed(() => {
+    const parsed = parsedPhone.value
+    return parsed && findCountry(parsed.country).code === parsed.country ? parsed : null
+  })
   const showResume = computed(() => leadStore.isRegistered && !editing.value)
   const resumeName = computed(() => leadStore.lead?.firstName ?? '')
   const fixedProjectType = computed(() => options.projectType?.() || '')
@@ -140,12 +142,10 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
         return EMAIL_PATTERN.test(email) ? '' : copy.errors.emailInvalid
       }
       case 'phone': {
-        const digits = toNationalNumber(values.phone)
-        if (!digits) return copy.errors.phoneRequired
-        const { min, max, name } = country.value
-        return digits.length >= min && digits.length <= max
-          ? ''
-          : copy.errors.phoneLength(min, max, name)
+        if (!values.phone.replace(/\D/g, '')) return copy.errors.phoneRequired
+        const parsed = parsedPhone.value
+        if (!parsed) return copy.errors.phoneInvalid(country.value.name)
+        return phoneOk.value ? '' : copy.errors.phoneCountry
       }
       case 'startTimeframe':
         return values.startTimeframe ? '' : copy.errors.startTimeframe
@@ -162,7 +162,11 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
   /** Al salir del campo: desde acá ese campo se valida en vivo. */
   function blur(field: LeadField) {
     touched[field] = true
-    if (field === 'phone') values.phone = toNationalNumber(values.phone)
+    // Se deja escrito el número limpio y, si trae otro prefijo, el país que le corresponde.
+    if (field === 'phone' && phoneOk.value) {
+      values.phoneCountry = phoneOk.value.country
+      values.phone = phoneOk.value.national
+    }
     validate(field)
   }
 
@@ -185,9 +189,10 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
       firstName: values.firstName.trim(),
       lastName: values.lastName.trim(),
       email: values.email.trim().toLowerCase(),
-      phoneCountry: country.value.code,
-      phoneDial: country.value.dial,
-      phone: toNationalNumber(values.phone),
+      phoneCountry: phoneOk.value?.country ?? country.value.code,
+      phoneDial: findCountry(phoneOk.value?.country ?? country.value.code).dial,
+      // En E.164 no hay ambigüedad: el backend vuelve a validarlo igual.
+      phone: phoneOk.value?.e164 ?? values.phone,
       startTimeframe: values.startTimeframe,
       projectType: fixedProjectType.value || values.projectType,
       commitment: values.commitment,
@@ -233,6 +238,7 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
     summary,
     editing,
     country,
+    phoneOk,
     showResume,
     resumeName,
     asksProjectType,

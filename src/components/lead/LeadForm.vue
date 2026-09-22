@@ -22,6 +22,7 @@ const {
   loading,
   summary,
   editing,
+  phoneOk,
   showResume,
   resumeName,
   asksProjectType,
@@ -111,6 +112,7 @@ const {
         :label="copy.fields.phone.label"
         :placeholder="copy.fields.phone.placeholder"
         :error="errors.phone"
+        :valid="phoneOk?.international"
         @blur="blur('phone')"
         @input="input('phone')"
         @country-change="countryChanged"
