@@ -72,16 +72,7 @@ const imageAlt = computed(() => (isTransfer.value ? transfer.imageAlt : notQuali
           <h2 class="thanks__door-title">{{ notQualified.doorTitle }}</h2>
           <p>{{ notQualified.doorText }}</p>
           <div class="thanks__actions">
-            <a
-              class="btn btn--dark"
-              :href="whatsappLink(notQualified.whatsappMessage)"
-              target="_blank"
-              rel="noopener"
-            >
-              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-              {{ notQualified.whatsapp }}
-            </a>
-            <a class="btn btn--ghost" :href="site.social.instagram" target="_blank" rel="noopener">
+            <a class="btn btn--dark" :href="site.social.instagram" target="_blank" rel="noopener">
               <i class="fa-brands fa-instagram" aria-hidden="true"></i>
               {{ notQualified.instagram }}
               <span class="thanks__handle">{{ site.social.instagramHandle }}</span>

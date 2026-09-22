@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useLeadStore } from '@/stores/lead'
-import { whatsappLink } from '@/config/site'
 import { scheduleCopy } from '@/config/copy/checkout'
 
 /**
@@ -54,12 +53,6 @@ const phone = computed(() => leadStore.lead?.phoneE164 ?? '')
       <p v-if="phone" class="choice__channel">
         <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
         {{ copy.advisor.channel(phone) }}
-      </p>
-      <p class="choice__wa">
-        {{ copy.advisor.whatsapp }}
-        <a :href="whatsappLink(copy.advisor.whatsappMessage)" target="_blank" rel="noopener">
-          {{ copy.advisor.whatsappAction }}
-        </a>
       </p>
     </article>
   </div>
@@ -182,13 +175,6 @@ const phone = computed(() => leadStore.lead?.phoneE164 ?? '')
     i {
       color: $success;
     }
-  }
-
-  &__wa a {
-    font-weight: 600;
-    color: $accent-deep;
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 }
 </style>

@@ -37,7 +37,6 @@ export const footerCopy = {
   contactTitle: 'Contacto',
   processTitle: 'Cómo empezamos',
   process: `Una visita técnica de asesoría, levantamiento y diagnóstico de $${facts.visitPrice}, que se descuentan del diseño 3D.`,
-  whatsappLabel: 'Escribir por WhatsApp al',
   emailLabel: 'Escribir un correo a',
   instagramLabel: 'Instagram de Construmia',
   place: 'Guayaquil, Ecuador',

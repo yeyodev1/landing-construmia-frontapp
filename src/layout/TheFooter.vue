@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { site, whatsappLink } from '@/config/site'
+import { site } from '@/config/site'
 import { footerCopy } from '@/config/copy/shell'
 
 const year = new Date().getFullYear()
@@ -20,16 +20,6 @@ const year = new Date().getFullYear()
 
       <address class="footer__col">
         <h2 class="footer__heading">{{ footerCopy.contactTitle }}</h2>
-        <a
-          class="footer__link"
-          :href="whatsappLink()"
-          target="_blank"
-          rel="noopener"
-          :aria-label="`${footerCopy.whatsappLabel} ${site.phoneDisplay}`"
-        >
-          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-          <span>{{ site.phoneDisplay }}</span>
-        </a>
         <a class="footer__link" :href="`mailto:${site.email}`" :aria-label="`${footerCopy.emailLabel} ${site.email}`">
           <i class="fa-regular fa-envelope" aria-hidden="true"></i>
           <span>{{ site.email }}</span>

@@ -139,7 +139,14 @@ onBeforeUnmount(() => window.clearTimeout(redirectTimer))
           <RouterLink :to="{ name: 'Pay' }" class="btn" :class="state === 'canceled' ? 'btn--primary' : 'btn--ghost'">
             {{ copy.backToPay }}
           </RouterLink>
-          <a class="response__help" :href="whatsappLink(copy.helpMessage)" target="_blank" rel="noopener">
+          <!-- Solo si pudo haber un cobro real: sin transacción o con el pago cancelado no hay WhatsApp. -->
+          <a
+            v-if="state !== 'canceled' && id && clientTransactionId"
+            class="response__help"
+            :href="whatsappLink(copy.helpMessage)"
+            target="_blank"
+            rel="noopener"
+          >
             <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
             {{ copy.help }}
           </a>
