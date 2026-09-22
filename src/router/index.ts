@@ -32,8 +32,10 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Reserva tu visita técnica', requiresLead: true },
   },
   {
-    // Payphone redirige acá con ?id=&clientTransactionId=
-    path: '/pago/respuesta',
+    // Payphone redirige acá con ?id=&clientTransactionId= (URL de respuesta configurada en Payphone).
+    // El alias atiende a quien quedó con la ruta anterior.
+    path: '/pay-response',
+    alias: '/pago/respuesta',
     name: 'PayResponse',
     component: () => import('@/views/PayResponseView.vue'),
     meta: { title: 'Confirmando tu pago' },

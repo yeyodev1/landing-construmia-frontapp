@@ -153,7 +153,7 @@ export function usePayphone(containerId: string) {
   return { status, errorMessage, renewed, remainingLabel, expiringSoon, retry: () => start() }
 }
 
-// ─── Confirmación en /pago/respuesta ─────────────────────────────────────
+// ─── Confirmación en /pay-response ─────────────────────────────────────
 
 const confirmations = new Map<string, Promise<PaymentConfirmation>>()
 
