@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useLeadStore } from '@/stores/lead'
 import { site } from '@/config/site'
+import { track } from '@/utils/pixel'
 
 /**
  * El embudo: registro (/) → video y cualificación (/video) → agenda (/agendar).
@@ -81,6 +82,7 @@ router.beforeEach((to) => {
 router.afterEach((to) => {
   const title = to.meta.title as string | undefined
   document.title = title && title !== site.name ? `${title} — ${site.name}` : site.name
+  track('PageView')
 })
 
 export default router

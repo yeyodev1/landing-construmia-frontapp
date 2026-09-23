@@ -3,7 +3,8 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { confirmPaymentOnce } from '@/composables/usePayphone'
 import { useLeadStore } from '@/stores/lead'
-import { whatsappLink } from '@/config/site'
+import { facts, whatsappLink } from '@/config/site'
+import { track } from '@/utils/pixel'
 import { payResponseCopy as copy } from '@/config/copy/checkout'
 import type { ApiError } from '@/types'
 
@@ -70,6 +71,7 @@ async function confirm() {
       if (result.lead) leadStore.set(result.lead)
       else await leadStore.refresh()
       state.value = 'paid'
+      track('Purchase', { value: facts.visitPrice, currency: 'USD' })
       if (canOpenSchedule.value) redirectTimer = window.setTimeout(goToSchedule, REDIRECT_MS)
       return
     }

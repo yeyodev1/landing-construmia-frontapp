@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { leadService } from '@/services/lead.service'
+import { track } from '@/utils/pixel'
 import type { Lead, LeadContactPayload, LeadMeta, QualificationAnswers } from '@/types'
 
 const STORAGE_KEY = 'construmia_lead'
@@ -37,6 +38,7 @@ export const useLeadStore = defineStore('lead', {
 
     async register(payload: LeadContactPayload) {
       this.set(await leadService.create(payload))
+      track('Lead')
     },
 
     async qualify(answers: QualificationAnswers, meta?: LeadMeta) {
