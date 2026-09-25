@@ -70,6 +70,11 @@ export const form = {
       label: '¿Cuándo quieres arrancar tu proyecto?',
       placeholder: 'Elige una opción',
     },
+    projectStage: {
+      label: '¿Tu proyecto es nuevo o ya está en curso?',
+      placeholder: 'Elige una opción',
+    },
+    serviceNeeded: { label: '¿Qué quieres con tu proyecto?', placeholder: 'Elige una opción' },
   },
   country: {
     button: 'País del teléfono',
@@ -93,6 +98,8 @@ export const form = {
     phoneCountry: 'Ese número es de un país que no está en la lista: elige el país correcto',
     projectType: 'Elige qué quieres transformar',
     startTimeframe: 'Elige cuándo quieres arrancar',
+    projectStage: 'Cuéntanos si tu proyecto es nuevo o está en curso',
+    serviceNeeded: 'Elige qué quieres con tu proyecto',
     commitment: 'Para continuar necesitamos tu compromiso con el proceso',
     summary: 'Revisa los campos marcados para continuar',
     fallback: 'No pudimos guardar tus datos. Inténtalo de nuevo en un momento.',

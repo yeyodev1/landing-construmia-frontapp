@@ -17,6 +17,19 @@ export const startTimeframes: Option[] = [
   { value: 'explorando', label: 'Solo estoy explorando' },
 ]
 
+/** Registro: si el proyecto está en curso, se pregunta además qué servicio busca. */
+export const projectStages: Option[] = [
+  { value: 'nuevo', label: 'Proyecto nuevo' },
+  { value: 'en-curso', label: 'Proyecto en curso' },
+]
+
+export const servicesNeeded: Option[] = [
+  { value: 'solo-diseno', label: 'Solo el diseño' },
+  { value: 'asesoria', label: 'Asesoría profesional' },
+  { value: 'supervision', label: 'Supervisión del proyecto' },
+  { value: 'todo', label: 'Todo lo anterior' },
+]
+
 export interface QualificationQuestion {
   key: 'projectType' | 'budget' | 'propertyStatus' | 'location' | 'decisionMaker'
   title: string
@@ -32,10 +45,10 @@ export const qualificationQuestions: QualificationQuestion[] = [
     help: 'Elige lo que más se parece a tu proyecto.',
     options: [
       { value: 'remodelacion-integral', label: 'Remodelación integral', hint: 'Varios espacios de la casa a la vez', icon: 'fa-solid fa-house-chimney' },
-      { value: 'ampliacion', label: 'Ampliación o segundo piso', hint: 'Crecer sobre lo que ya existe', icon: 'fa-solid fa-layer-group' },
+      { value: 'ampliacion', label: 'Ampliación / obra civil', hint: 'Trabajar sobre lo existente', icon: 'fa-solid fa-layer-group' },
       { value: 'casa-antigua', label: 'Casa antigua', hint: 'Reestructurarla por completo', icon: 'fa-solid fa-hammer' },
       { value: 'construccion-nueva', label: 'Construcción desde cero', hint: 'Terreno listo o por comprar', icon: 'fa-solid fa-compass-drafting' },
-      { value: 'un-ambiente', label: 'Un solo ambiente', hint: 'Una cocina, un baño, un cuarto', icon: 'fa-solid fa-couch' },
+      { value: 'un-ambiente', label: 'Un solo ambiente', hint: 'Una cocina, un baño, un cuarto, un patio', icon: 'fa-solid fa-couch' },
     ],
   },
   {

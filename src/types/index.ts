@@ -51,6 +51,9 @@ export interface LeadContactPayload {
   /** Número nacional, solo dígitos, sin el 0 inicial */
   phone: string
   startTimeframe: string
+  projectStage: string
+  /** Solo si el proyecto está en curso; si no, va vacío. */
+  serviceNeeded: string
   /** Primera pregunta del registro (value de PROJECT_TYPES). */
   projectType?: string
   commitment: boolean

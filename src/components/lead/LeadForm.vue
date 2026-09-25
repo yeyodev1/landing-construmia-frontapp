@@ -6,7 +6,7 @@ import CommitmentCheck from '@/components/lead/CommitmentCheck.vue'
 import LeadResume from '@/components/lead/LeadResume.vue'
 import LeadSelectField from '@/components/lead/LeadSelectField.vue'
 import { useLeadForm } from '@/composables/useLeadForm'
-import { startTimeframes } from '@/config/qualification'
+import { projectStages, servicesNeeded, startTimeframes } from '@/config/qualification'
 import { form as copy, projectTypeQuestion } from '@/config/copy/landing'
 
 const props = defineProps<{
@@ -26,6 +26,7 @@ const {
   showResume,
   resumeName,
   asksProjectType,
+  asksService,
   blur,
   input,
   countryChanged,
@@ -116,6 +117,28 @@ const {
         @blur="blur('phone')"
         @input="input('phone')"
         @country-change="countryChanged"
+      />
+
+      <LeadSelectField
+        :id="fieldId('projectStage')"
+        v-model="values.projectStage"
+        name="project-stage"
+        :label="copy.fields.projectStage.label"
+        :placeholder="copy.fields.projectStage.placeholder"
+        :options="projectStages"
+        :error="errors.projectStage"
+        @blur="blur('projectStage')"
+      />
+      <LeadSelectField
+        v-if="asksService"
+        :id="fieldId('serviceNeeded')"
+        v-model="values.serviceNeeded"
+        name="service-needed"
+        :label="copy.fields.serviceNeeded.label"
+        :placeholder="copy.fields.serviceNeeded.placeholder"
+        :options="servicesNeeded"
+        :error="errors.serviceNeeded"
+        @blur="blur('serviceNeeded')"
       />
 
       <LeadSelectField

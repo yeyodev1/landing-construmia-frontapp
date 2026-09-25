@@ -15,6 +15,8 @@ export type LeadField =
   | 'lastName'
   | 'email'
   | 'phone'
+  | 'projectStage'
+  | 'serviceNeeded'
   | 'startTimeframe'
   | 'commitment'
 
@@ -25,6 +27,8 @@ const FIELDS: LeadField[] = [
   'lastName',
   'email',
   'phone',
+  'projectStage',
+  'serviceNeeded',
   'startTimeframe',
   'commitment',
 ]
@@ -83,6 +87,8 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
     email: '',
     phoneCountry: DEFAULT_COUNTRY.code,
     phone: '',
+    projectStage: '',
+    serviceNeeded: '',
     startTimeframe: '',
     commitment: false,
   })
@@ -93,6 +99,8 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
     lastName: '',
     email: '',
     phone: '',
+    projectStage: '',
+    serviceNeeded: '',
     startTimeframe: '',
     commitment: '',
   })
@@ -103,6 +111,8 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
     lastName: false,
     email: false,
     phone: false,
+    projectStage: false,
+    serviceNeeded: false,
     startTimeframe: false,
     commitment: false,
   })
@@ -124,8 +134,14 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
   const fixedProjectType = computed(() => options.projectType?.() || '')
   /** Sin tipo elegido antes (formulario inline), el select es el primer campo. */
   const asksProjectType = computed(() => !fixedProjectType.value)
+  /** El servicio solo se pregunta si la obra ya arrancó. */
+  const asksService = computed(() => values.projectStage === 'en-curso')
   const fields = computed(() =>
-    asksProjectType.value ? FIELDS : FIELDS.filter((field) => field !== 'projectType'),
+    FIELDS.filter(
+      (field) =>
+        (field !== 'projectType' || asksProjectType.value) &&
+        (field !== 'serviceNeeded' || asksService.value),
+    ),
   )
 
   function messageFor(field: LeadField): string {
@@ -147,6 +163,10 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
         if (!parsed) return copy.errors.phoneInvalid(country.value.name)
         return phoneOk.value ? '' : copy.errors.phoneCountry
       }
+      case 'projectStage':
+        return values.projectStage ? '' : copy.errors.projectStage
+      case 'serviceNeeded':
+        return !asksService.value || values.serviceNeeded ? '' : copy.errors.serviceNeeded
       case 'startTimeframe':
         return values.startTimeframe ? '' : copy.errors.startTimeframe
       case 'commitment':
@@ -194,6 +214,8 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
       // En E.164 no hay ambigüedad: el backend vuelve a validarlo igual.
       phone: phoneOk.value?.e164 ?? values.phone,
       startTimeframe: values.startTimeframe,
+      projectStage: values.projectStage,
+      serviceNeeded: asksService.value ? values.serviceNeeded : '',
       projectType: fixedProjectType.value || values.projectType,
       commitment: values.commitment,
       utm: attribution.utm,
@@ -242,6 +264,7 @@ export function useLeadForm(idPrefix: string, options: LeadFormOptions = {}) {
     showResume,
     resumeName,
     asksProjectType,
+    asksService,
     blur,
     input,
     countryChanged,
