@@ -200,10 +200,24 @@ function toggle() {
     }
   }
 
+  // Insignia con fondo: el ícono se lee como parte de la opción, no como adorno suelto.
   &__icon {
-    width: 1.1rem;
-    text-align: center;
+    @include flex(row, center, center, 0);
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: $radius-sm;
+    background: rgba($accent, 0.1);
     color: $accent;
+    font-size: 0.85rem;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    .is-selected & {
+      background: $accent;
+      color: $surface;
+    }
   }
 
   &__text {

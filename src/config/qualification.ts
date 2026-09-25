@@ -19,15 +19,15 @@ export const startTimeframes: Option[] = [
 
 /** Registro: si el proyecto está en curso, se pregunta además qué servicio busca. */
 export const projectStages: Option[] = [
-  { value: 'nuevo', label: 'Proyecto nuevo' },
-  { value: 'en-curso', label: 'Proyecto en curso' },
+  { value: 'en-curso', label: 'Proyecto en curso', hint: 'La obra ya arrancó', icon: 'fa-solid fa-person-digging' },
+  { value: 'nuevo', label: 'Proyecto nuevo', hint: 'Todavía no empieza', icon: 'fa-solid fa-seedling' },
 ]
 
 export const servicesNeeded: Option[] = [
-  { value: 'solo-diseno', label: 'Solo el diseño' },
-  { value: 'asesoria', label: 'Asesoría profesional' },
-  { value: 'supervision', label: 'Supervisión del proyecto' },
-  { value: 'todo', label: 'Todo lo anterior' },
+  { value: 'solo-diseno', label: 'Solo el diseño', hint: 'Planos y render de lo que falta', icon: 'fa-solid fa-pen-ruler' },
+  { value: 'asesoria', label: 'Asesoría profesional', hint: 'Criterio experto para decidir bien', icon: 'fa-solid fa-comments' },
+  { value: 'supervision', label: 'Supervisión del proyecto', hint: 'Que alguien controle la obra', icon: 'fa-solid fa-helmet-safety' },
+  { value: 'todo', label: 'Todo lo anterior', hint: 'Diseño, asesoría y supervisión', icon: 'fa-solid fa-layer-group' },
 ]
 
 export interface QualificationQuestion {
