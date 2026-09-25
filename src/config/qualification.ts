@@ -80,11 +80,9 @@ export const qualificationQuestions: QualificationQuestion[] = [
     help: 'Para coordinar la visita técnica.',
     options: [
       { value: 'guayaquil', label: 'Guayaquil' },
-      { value: 'samborondon', label: 'Samborondón' },
-      { value: 'via-a-la-costa', label: 'Vía a la Costa' },
-      { value: 'daule-aurora', label: 'Daule / La Aurora' },
-      { value: 'salinas-peninsula', label: 'Salinas / Península' },
-      { value: 'otra', label: 'Otra ciudad' },
+      { value: 'quito', label: 'Quito' },
+      { value: 'cuenca', label: 'Cuenca' },
+      { value: 'otra', label: 'Otras ciudades' },
     ],
   },
   {

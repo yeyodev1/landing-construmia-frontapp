@@ -52,7 +52,7 @@ export const embeds = {
   /** Segundos que dura el contador de la página del video. */
   unlockSeconds: 120,
   /** Segundos de adelanto del video en la home antes de pedir el registro. */
-  previewSeconds: 10,
+  previewSeconds: 3,
 } as const
 
 /** Cuentas para transferencia. `domain` alimenta el logo (logo.dev). */

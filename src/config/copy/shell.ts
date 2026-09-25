@@ -68,19 +68,19 @@ export interface ActivitySample {
 }
 
 export const activitySamples: ActivitySample[] = [
-  { firstName: 'Andrea', location: 'samborondon', action: 'registro' },
+  { firstName: 'Andrea', location: 'quito', action: 'registro' },
   { firstName: 'Carlos', location: 'guayaquil', action: 'cualificacion' },
-  { firstName: 'Gabriela', location: 'via-a-la-costa', action: 'registro' },
-  { firstName: 'Jorge', location: 'daule-aurora', action: 'pago' },
+  { firstName: 'Gabriela', location: 'cuenca', action: 'registro' },
+  { firstName: 'Jorge', location: 'quito', action: 'pago' },
   { firstName: 'Daniela', location: 'guayaquil', action: 'registro' },
-  { firstName: 'Luis', location: 'salinas-peninsula', action: 'cualificacion' },
-  { firstName: 'Fernanda', location: 'samborondon', action: 'cualificacion' },
+  { firstName: 'Luis', location: 'cuenca', action: 'cualificacion' },
+  { firstName: 'Fernanda', location: 'quito', action: 'cualificacion' },
   { firstName: 'Diego', location: 'guayaquil', action: 'registro' },
-  { firstName: 'Paola', location: 'daule-aurora', action: 'registro' },
-  { firstName: 'Xavier', location: 'via-a-la-costa', action: 'pago' },
+  { firstName: 'Paola', location: 'cuenca', action: 'registro' },
+  { firstName: 'Xavier', location: 'quito', action: 'pago' },
   { firstName: 'Verónica', location: 'guayaquil', action: 'cualificacion' },
-  { firstName: 'Andrés', location: 'salinas-peninsula', action: 'registro' },
-  { firstName: 'Karina', location: 'samborondon', action: 'registro' },
+  { firstName: 'Andrés', location: 'guayaquil', action: 'registro' },
+  { firstName: 'Karina', location: 'cuenca', action: 'registro' },
   { firstName: 'Roberto', location: 'guayaquil', action: 'cualificacion' },
 ]
 
